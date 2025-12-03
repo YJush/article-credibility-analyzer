@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Header } from "@/components/Header";
 import { URLInput } from "@/components/URLInput";
 import { RecentAnalyses } from "@/components/RecentAnalyses";
 import { LoadingAnalysis } from "@/components/LoadingAnalysis";
 import { AnalysisResults } from "@/components/AnalysisResults";
-import { findDemoArticle, getRecentAnalyses, type AnalysisResult } from "@/data/demoArticles";
+import { getRecentAnalyses, type AnalysisResult } from "@/data/demoArticles";
+import { analyzeArticle } from "@/services/analysisService";
 import { toast } from "sonner";
 
 type AppState = "input" | "loading" | "results";
@@ -16,26 +17,33 @@ const Index = () => {
 
   const handleAnalyze = async (url: string) => {
     setState("loading");
+    setIsDemo(false);
     
-    // Check if it's a demo URL
-    const demoResult = findDemoArticle(url);
-    
-    if (demoResult) {
-      setIsDemo(true);
-      // Simulate quick loading for demo
-      setTimeout(() => {
-        setCurrentResult(demoResult);
+    try {
+      const response = await analyzeArticle(url);
+      
+      if (response.success && response.data) {
+        setCurrentResult(response.data);
         setState("results");
-      }, 2000);
-    } else {
-      setIsDemo(false);
-      // For non-demo URLs, show a message that full analysis requires backend
-      setTimeout(() => {
-        toast.error("This URL is not in our demo database. Try one of the example articles!", {
-          description: "Full analysis requires backend integration.",
+        
+        // Check if it was a demo article for faster animation
+        if (response.data.url.includes('forbes.com') || 
+            response.data.url.includes('techcrunch.com') ||
+            response.data.url.includes('nytimes.com')) {
+          setIsDemo(true);
+        }
+      } else {
+        toast.error(response.error || "Failed to analyze article", {
+          description: "Please try a different URL or check if the site allows scraping.",
         });
         setState("input");
-      }, 3000);
+      }
+    } catch (error) {
+      console.error('Analysis error:', error);
+      toast.error("An error occurred while analyzing", {
+        description: "Please try again or use one of the example articles.",
+      });
+      setState("input");
     }
   };
 
