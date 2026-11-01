@@ -1,6 +1,6 @@
 # Article Credibility Analyzer
 
-[![CI](https://github.com/YJush/article-credibility-analyzer/actions/workflows/ci.yml/badge.svg)](https://github.com/YJush/article-credibility-analyzer/actions/workflows/ci.yml)
+[![CI](https://github.com/industry-contents/article-credibility-analyzer/actions/workflows/ci.yml/badge.svg)](https://github.com/industry-contents/article-credibility-analyzer/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-B8390D.svg)](LICENSE)
 
 Score how promotional an article is. Paste a URL and the analyzer returns a marketing score, flagged language, brand mentions, tone analysis and a plain-language recommendation: should trust, be skeptical, or likely marketing.
@@ -24,7 +24,7 @@ React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, Supabase Edge Functions.
 ## Getting started
 
 ```sh
-git clone https://github.com/YJush/article-credibility-analyzer.git
+git clone https://github.com/industry-contents/article-credibility-analyzer.git
 cd article-credibility-analyzer
 cp .env.example .env   # add your own Supabase project values
 npm ci
