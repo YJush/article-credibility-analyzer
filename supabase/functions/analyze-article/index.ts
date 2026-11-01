@@ -23,6 +23,19 @@ serve(async (req) => {
   try {
     const { url } = await req.json();
     
+    let parsedUrl: URL | null = null;
+    try {
+      parsedUrl = typeof url === 'string' && url.length <= 2048 ? new URL(url) : null;
+    } catch {
+      parsedUrl = null;
+    }
+    if (!parsedUrl || !['http:', 'https:'].includes(parsedUrl.protocol)) {
+      return new Response(JSON.stringify({ error: 'A valid http(s) article URL is required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     if (!url) {
       return new Response(JSON.stringify({ error: 'URL is required' }), {
         status: 400,
@@ -36,7 +49,7 @@ serve(async (req) => {
     console.log('Step 1: Extracting article content...');
     let articleText = '';
     let articleTitle = '';
-    let articleMetadata: any = {};
+    let articleMetadata: Record<string, unknown> = {};
 
     try {
       const jinaResponse = await fetch(`https://r.jina.ai/${url}`, {
